@@ -8,7 +8,6 @@ class LinhaCache
     private $escrita = false;
     private $valid = false;
     private $rotulo;
-    private $indice = 0;
 
     public function __construct()
     {
@@ -56,16 +55,5 @@ class LinhaCache
     public function getRotulo()
     {
         return $this->rotulo;
-    }
-
-    public function setIndice($indice)
-    {
-        $this->indice = $indice;
-        return $this;
-    }
-
-    public function getIndice()
-    {
-        return $this->indice;
     }
 }

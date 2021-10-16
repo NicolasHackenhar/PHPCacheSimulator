@@ -20,13 +20,13 @@ class Conjunto
         return $this->linhas;
     }
 
-    public function getLinha($rotulo, $deslocamento)
+    public function getLinha($rotulo)
     {
         foreach ($this->linhas as $linhaCache)
         {
             if ($linhaCache->getRotulo() == $rotulo && $linhaCache->isValid())
             {
-                return $linhaCache->getConteudo($deslocamento);
+                return $linhaCache;
             }
         }
 
@@ -44,11 +44,6 @@ class Conjunto
             );
         }
         $this->linhas[$this->contador]->setValid(true);
-        $this->linhas[$this->contador]->setIndice($this->contador);
-        if ($this->cheio)
-        {
-            $this->linhas[$this->contador]->setIndice(1);
-        }
         $this->contador++;
         if ($this->contador > 1)
         {
@@ -72,18 +67,6 @@ class Conjunto
 
     public function removeLinha()
     {
-        $linhaRetorno = false;
-        foreach ($this->linhas as $indiceLinha => $linhaCache)
-        {
-            if ($linhaCache->getIndice() == 0)
-            {
-                $this->contador = $indiceLinha;
-                $linhaRetorno =  $linhaCache;
-            }elseif ($linhaCache->getIndice() == 1)
-            {
-                $linhaCache->setIndice(0);
-            }
-        }
-        return $linhaRetorno;
+        return $this->linhas[$this->contador];
     }
 }
