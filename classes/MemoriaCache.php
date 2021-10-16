@@ -7,6 +7,12 @@ class MemoriaCache
     private $conjuntos = array();
     private $operacao;
     private $conteudo;
+    private $sucessosLeitura = 0;
+    private $sucessosEscrita = 0;
+    private $faltasLeitura = 0;
+    private $faltasEscrita = 0;
+    private $retornoLeitura = array();
+
 
     public function __construct(int $conjuntos)
     {
@@ -28,18 +34,28 @@ class MemoriaCache
         $numeroBloco = (int)($endereco / 4);
         $deslocamento = $endereco % 4;
         $quadro = $numeroBloco % 4;
+        $this->retornoLeitura = [
+            'numeroBloco' => $numeroBloco,
+            'quadro' => $quadro,
+            'deslocamento' => $deslocamento
+        ];
         $linhaCache = $this->conjuntos[$quadro]->getLinha($numeroBloco, $deslocamento);
 
         if (!$linhaCache)
         {
+            $this->retornoLeitura['inCache'] = 'Nao';
             return $this->notInCache($MP, $numeroBloco, $quadro, $deslocamento);
         }
 
         if ($this->operacao == 0)
         {
-            return $linhaCache->getConteudo($deslocamento);
-        }
+            $this->sucessosLeitura++;
+            $this->retornoLeitura['inCache'] = 'Sim';
+            $this->retornoLeitura['conteudo'] = $linhaCache->getConteudo($deslocamento);
 
+            return $this->retornoLeitura;
+        }
+        $this->sucessosEscrita++;
         return $this->escreveInCache($linhaCache, $deslocamento);
     }
 
@@ -68,8 +84,11 @@ class MemoriaCache
         $this->conjuntos[$quadro]->insertBloco($blocoMP, $numeroBloco);
         if ($this->operacao == 0)
         {
-            return $this->conjuntos[$quadro]->getLinha($numeroBloco, $deslocamento)->getConteudo($deslocamento);
+            $this->retornoLeitura['conteudo'] = $this->conjuntos[$quadro]->getLinha($numeroBloco, $deslocamento)->getConteudo($deslocamento);
+            $this->faltasLeitura++;
+            return $this->retornoLeitura;
         }
+        $this->faltasEscrita++;
         return $this->escreveInCache($this->conjuntos[$quadro]->getLinha($numeroBloco, $deslocamento), $deslocamento);
     }
 
@@ -83,6 +102,28 @@ class MemoriaCache
     public function setOperacao($operacao)
     {
         $this->operacao = $operacao;
+    }
+
+    public function getEstatisticas()
+    {
+        return [
+            'Sucessos' => [
+                'Leitura' => $this->sucessosLeitura,
+                'Escrita' => $this->sucessosEscrita,
+                'Total' =>  $this->sucessosLeitura + $this->sucessosEscrita,
+            ],
+            'Faltas' => [
+                'Leitura' => $this->faltasLeitura,
+                'Escrita' => $this->faltasEscrita,
+                'Total' => $this->faltasLeitura + $this->faltasEscrita
+            ],
+            'Geral' =>
+                [
+                    'Sucessos' => $this->sucessosLeitura + $this->sucessosEscrita,
+                    'Faltas' => $this->faltasLeitura + $this->faltasEscrita,
+                    'Total' => $this->sucessosLeitura + $this->sucessosEscrita+$this->faltasLeitura + $this->faltasEscrita
+                ]
+        ];
     }
 
 }

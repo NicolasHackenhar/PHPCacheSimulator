@@ -11,10 +11,10 @@ class LinhaCache
 
     public function __construct()
     {
-        $this->conteudo[0] = null;
-        $this->conteudo[1] = null;
-        $this->conteudo[2] = null;
-        $this->conteudo[3] = null;
+        $this->conteudo[0] = '00';
+        $this->conteudo[1] = '00';
+        $this->conteudo[2] = '00';
+        $this->conteudo[3] = '00';
     }
 
     public function setConteudo($conteudo, $deslocamento)

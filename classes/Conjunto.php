@@ -69,4 +69,9 @@ class Conjunto
     {
         return $this->linhas[$this->contador];
     }
+
+    public function getContador()
+    {
+        return $this->contador;
+    }
 }
